@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Text, TextInput, View, Pressable, Alert, StyleSheet } from 'react-native';
 
+import * as EmailValidator from 'email-validator';
+
 class Login extends Component {
     constructor(props) {
         super(props)
@@ -8,7 +10,8 @@ class Login extends Component {
         this.state = {
             email: "",
             password: "",
-            submitted: false
+            submitted: false,
+            error: ''
         }
 
         this._onButtonPress = this._onButtonPress.bind(this);
@@ -18,7 +21,10 @@ class Login extends Component {
         this.setState({submitted: true})
         
         // Validate entered info
-        
+        if(!EmailValidator.validate(this.state.email)) {
+            this.setState({error:"Email was incorrect"})
+            return;
+        }
 
         return;
     }
@@ -31,6 +37,9 @@ class Login extends Component {
                 <Pressable style={styles.loginButton} onPress={this._onButtonPress}>
                     <Text>Login</Text>
                 </Pressable>
+                <View>
+                    <Text>{this.state.error}</Text>
+                </View>
             </View>
         )
     }
@@ -51,15 +60,15 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         border: 10,
         borderColor: 'black',
-        color: 'white',
-        backgroundColor: '#5A5A5A'
+        color: 'black',
+        backgroundColor: 'white'
     },
     loginButton: {
         width: '35%',
         textAlign: 'center',
         padding: 10,
         borderRadius: '15%',
-        backgroundColor: '#5A5A5A',
+        backgroundColor: 'white',
         fontWeight: 'bold'
     }
 })
