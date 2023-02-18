@@ -62,14 +62,17 @@ class Login extends Component {
             <View style={styles.screenContainer}>
                 <Text style={styles.titleTextContainer}>WhatsThat?</Text>
                 <View style={styles.formContainer}>
-                <Text style={{marginBottom: 20, color: 'black', fontSize: '1.8em'}}>Enter your login:</Text>
-                    <TextInput style={styles.fieldContainer} placeholder='Email' onChangeText={value=>this.setState({email:value})} />
-                    <TextInput style={styles.fieldContainer} secureTextEntry={true} placeholder='Password' onChangeText={value=>this.setState({password:value})} />
-                    <Pressable style={styles.loginButton} onPress={this._onButtonPress}>
-                        <Text>Login</Text>
-                    </Pressable>
-                    <View>
+                    <View style={styles.formFieldsContainer}>
+                        <Text style={{marginBottom: 20, color: 'black', fontSize: '1.8em'}}>Enter your login:</Text>
+                        <TextInput style={styles.fieldContainer} placeholder='Email' onChangeText={value=>this.setState({email:value})} />
+                        <TextInput style={styles.fieldContainer} secureTextEntry={true} placeholder='Password' onChangeText={value=>this.setState({password:value})} />
+                        <Pressable style={styles.loginButton} onPress={this._onButtonPress}>
+                            <Text>Login</Text>
+                        </Pressable>
+                    </View>
+                    <View style={styles.formExtrasContainer}>
                         <Text style={this.state.error == "Logging you in!" ? styles.noErrorMessage : styles.errorMessage}>{this.state.error}</Text>
+                        <Text style={styles.signUpText}>Don't have an account? Click here!</Text>
                     </View>
                 </View>
             </View>
@@ -100,7 +103,13 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        position: 'relative'
+    },
+    formFieldsContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 7
     },
     fieldContainer: {
         marginTop: 20,
@@ -119,13 +128,23 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         fontWeight: 'bold'
     },
+    formExtrasContainer: {
+        flex: 3,
+        textAlign: 'center',
+        display: 'flex',
+        justifyContent: 'space-between'
+    },
     errorMessage: {
         color: 'red',
-        marginTop: '20px'
+        alignSelf: 'flex-start'
     },
     noErrorMessage: {
         color: 'blue',
         marginTop: '20px'
+    },
+    signUpText: {
+        justifyContent: 'flex-end',
+        marginBottom: 15
     }
 })
 
