@@ -8,41 +8,60 @@ class SignUp extends Component {
         super(props);
 
         this.state = {
+            first_name: "",
+            last_name: "",
             email: "",
             password: "",
             submitted: false,
-            error: ""
+            error: "",
+            hasAnAccount: false
         }
 
         this._onButtonPress = this._onButtonPress.bind(this);
+        this._updateHasAccount = this._updateHasAccount.bind(this);
     }
 
     _validateInputs() {
         // Check if fields are empty
-        if(this.state.email === "" || this.state.password === "") {
-            this.setState({error:"Either the email or password field is empty!"});
-            this.setState({submitted:false})
+        if(this.state.first_name == "" || this.state.last_name == "" || this.state.email === "" || this.state.password === "") {
+            this.setState({error:"All fields need to be completed"});
+            this.setState({submitted:false});
             return;
         } 
-        
+
+        // Validate first name
+        if(this.state.first_name == "" || this.state.first_name.length <= 2) {
+            this.setState({error:"First name invalid"});
+            this.setState({submitted:false});
+            return;
+        }
+
+        // Validate last name
+        if(this.state.last_name == "" || this.state.last_name.length <= 2) {
+            this.setState({error:"Last name invalid"});
+            this.setState({submitted:false});
+            return;
+        }
+
         // Validate email
         if(!EmailValidator.validate(this.state.email)) {
             this.setState({error:"Email was incorrect"});
-            this.setState({submitted:false})
+            this.setState({submitted:false});
             return;
         }
 
         // Validate password
         const re = new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");
         if(re.test(this.state.password) === false) {
-            this.setState({error:"Password was incorrect"});
-            this.setState({submitted:false})
+            this.setState({error:"Password not strong enough"});
+            this.setState({submitted:false});
             return;
         }
 
         // If all validation passes
-        if(EmailValidator.validate(this.state.email) && re.test(this.state.password) === true) {
+        if((this.state.first_name != "" && this.state.first_name.length > 2) && (this.state.last_name != "" && this.state.last_name.length > 2) && EmailValidator.validate(this.state.email) && re.test(this.state.password) === true) {
             this.setState({error:"Logging you in!"});
+            this.setState({submitted:true});
             return;
         }
 
@@ -60,22 +79,29 @@ class SignUp extends Component {
         return;
     }
 
+    _updateHasAccount() {
+        this.state.hasAnAccount ? this.setState({hasAnAccount:false}) : this.setState({hasAnAccount:true})
+        return;
+    }
+
     render() {
         return (
             <View style={styles.screenContainer}>
                 <Text style={styles.titleTextContainer}>WhatsThat?</Text>
                 <View style={styles.formContainer}>
                     <View style={styles.formFieldsContainer}>
-                        <Text style={{marginBottom: 20, color: 'black', fontSize: '1.8em'}}>Enter your login:</Text>
+                        <Text style={{marginBottom: 20, color: 'black', fontSize: '1.8em'}}>Enter your details:</Text>
+                        <TextInput style={styles.fieldContainer} placeholder='First name' onChangeText={value=>this.setState({first_name:value})} />
+                        <TextInput style={styles.fieldContainer} placeholder='Last name' onChangeText={value=>this.setState({last_name:value})} />
                         <TextInput style={styles.fieldContainer} placeholder='Email' onChangeText={value=>this.setState({email:value})} />
                         <TextInput style={styles.fieldContainer} secureTextEntry={true} placeholder='Password' onChangeText={value=>this.setState({password:value})} />
-                        <Pressable style={styles.loginButton} onPress={this._onButtonPress}>
-                            <Text>Login</Text>
+                        <Pressable style={styles.signupButton} onPress={this._onButtonPress}>
+                            <Text>SignUp</Text>
                         </Pressable>
                     </View>
                     <View style={styles.formExtrasContainer}>
                         <Text style={this.state.error == "Logging you in!" ? styles.noErrorMessage : styles.errorMessage}>{this.state.error}</Text>
-                        <Text style={styles.signUpText}>Don't have an account? Click here!</Text>
+                        <Text style={styles.signUpText}>Already have an account? <a style={{color: 'blue'}} onClick={this._updateHasAccount}>Click here!</a></Text>
                     </View>
                 </View>
             </View>
@@ -102,7 +128,7 @@ const styles = StyleSheet.create({
     formContainer: {
         backgroundColor: '#87FF8D',
         width: '80%',
-        height: '50%',
+        height: '60%',
         borderRadius: 20,
         display: 'flex',
         justifyContent: 'center',
@@ -112,17 +138,17 @@ const styles = StyleSheet.create({
     formFieldsContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        flex: 7
+        flex: 7,
+        display: 'flex',
+        justifyContent: 'space-between'
     },
     fieldContainer: {
-        marginTop: 20,
-        marginBottom: 20,
         padding: 10,
         borderRadius: 10,
         color: 'black',
         backgroundColor: 'white'
     },
-    loginButton: {
+    signupButton: {
         width: '35%',
         textAlign: 'center',
         margin: 5,
