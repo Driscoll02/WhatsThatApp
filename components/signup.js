@@ -13,12 +13,10 @@ class SignUp extends Component {
             email: "",
             password: "",
             submitted: false,
-            error: "",
-            hasAnAccount: false
+            error: ""
         }
 
         this._onButtonPress = this._onButtonPress.bind(this);
-        this._updateHasAccount = this._updateHasAccount.bind(this);
     }
 
     _validateInputs() {
@@ -76,11 +74,6 @@ class SignUp extends Component {
         // Validate form inputs
         this._validateInputs();
 
-        return;
-    }
-
-    _updateHasAccount() {
-        this.state.hasAnAccount ? this.setState({hasAnAccount:false}) : this.setState({hasAnAccount:true})
         return;
     }
 
