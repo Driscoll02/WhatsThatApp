@@ -77,6 +77,15 @@ class SignUp extends Component {
         return;
     }
 
+    // Reset state when user navigates back to screen
+    componentDidMount() {
+        const refreshState = this.props.navigation.addListener("focus", () => {
+            this.setState({first_name:"", last_name:"", email:"", password:"", submitted:false, error:""})
+        })
+
+        return refreshState;
+    } 
+
     render() {
         return (
             <View style={styles.screenContainer}>
@@ -84,10 +93,10 @@ class SignUp extends Component {
                 <View style={styles.formContainer}>
                     <View style={styles.formFieldsContainer}>
                         <Text style={{marginBottom: 20, marginTop: 20, color: 'black', fontSize: '1.8em'}}>Enter your details:</Text>
-                        <TextInput style={styles.fieldContainer} placeholder='First name' onChangeText={value=>this.setState({first_name:value})} />
-                        <TextInput style={styles.fieldContainer} placeholder='Last name' onChangeText={value=>this.setState({last_name:value})} />
-                        <TextInput style={styles.fieldContainer} placeholder='Email' onChangeText={value=>this.setState({email:value})} />
-                        <TextInput style={styles.fieldContainer} secureTextEntry={true} placeholder='Password' onChangeText={value=>this.setState({password:value})} />
+                        <TextInput style={styles.fieldContainer} placeholder='First name' value={this.state.first_name} onChangeText={value=>this.setState({first_name:value})} />
+                        <TextInput style={styles.fieldContainer} placeholder='Last name' value={this.state.last_name} onChangeText={value=>this.setState({last_name:value})} />
+                        <TextInput style={styles.fieldContainer} placeholder='Email' value={this.state.email} onChangeText={value=>this.setState({email:value})} />
+                        <TextInput style={styles.fieldContainer} secureTextEntry={true} placeholder='Password' value={this.state.password} onChangeText={value=>this.setState({password:value})} />
                         <Pressable style={styles.signupButton} onPress={this._onButtonPress}>
                             <Text>SignUp</Text>
                         </Pressable>

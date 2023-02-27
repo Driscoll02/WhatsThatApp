@@ -61,9 +61,14 @@ class Login extends Component {
         return;
     }
 
-    static navigationOptions = {
-        header: null
-    }    
+    // Reset state when user navigates back to screen
+    componentDidMount() {
+        const refreshState = this.props.navigation.addListener("focus", () => {
+            this.setState({email:"", password:"", submitted:false, error:""})
+        })
+
+        return refreshState;
+    } 
 
     render() {
         return (
@@ -72,8 +77,8 @@ class Login extends Component {
                 <View style={styles.formContainer}>
                     <View style={styles.formFieldsContainer}>
                         <Text style={{marginBottom: 20, color: 'black', fontSize: '1.8em'}}>Enter your login:</Text>
-                        <TextInput style={styles.fieldContainer} placeholder='Email' onChangeText={value=>this.setState({email:value})} />
-                        <TextInput style={styles.fieldContainer} secureTextEntry={true} placeholder='Password' onChangeText={value=>this.setState({password:value})} />
+                        <TextInput style={styles.fieldContainer} placeholder='Email' value={this.state.email} onChangeText={value=>this.setState({email:value})} />
+                        <TextInput style={styles.fieldContainer} secureTextEntry={true} placeholder='Password' value={this.state.password} onChangeText={value=>this.setState({password:value})} />
                         <Pressable style={styles.loginButton} onPress={this._onButtonPress}>
                             <Text>Login</Text>
                         </Pressable>
