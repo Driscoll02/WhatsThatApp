@@ -90,7 +90,7 @@ class SignUp extends Component {
                 <Text style={styles.titleTextContainer}>WhatsThat?</Text>
                 <View style={styles.formContainer}>
                     <View style={styles.formFieldsContainer}>
-                        <Text style={{marginBottom: 20, color: 'black', fontSize: '1.8em'}}>Enter your details:</Text>
+                        <Text style={{marginBottom: 20, marginTop: 20, color: 'black', fontSize: '1.8em'}}>Enter your details:</Text>
                         <TextInput style={styles.fieldContainer} placeholder='First name' onChangeText={value=>this.setState({first_name:value})} />
                         <TextInput style={styles.fieldContainer} placeholder='Last name' onChangeText={value=>this.setState({last_name:value})} />
                         <TextInput style={styles.fieldContainer} placeholder='Email' onChangeText={value=>this.setState({email:value})} />
@@ -101,7 +101,7 @@ class SignUp extends Component {
                     </View>
                     <View style={styles.formExtrasContainer}>
                         <Text style={this.state.error == "Logging you in!" ? styles.noErrorMessage : styles.errorMessage}>{this.state.error}</Text>
-                        <Text style={styles.signUpText}>Already have an account? <a style={{color: 'blue'}} onClick={this._updateHasAccount}>Click here!</a></Text>
+                        <Text style={styles.signUpText}>Already have an account? <Text style={{color: 'blue'}} onPress={() => this.props.navigation.navigate('Login')}>Click here!</Text></Text>
                     </View>
                 </View>
             </View>
@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#349E39'
     },
     titleTextContainer: {
         backgroundColor: '#149966', 

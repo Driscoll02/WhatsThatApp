@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Text, TextInput, View, Pressable, StyleSheet } from 'react-native';
+import SignUp from './signup';
 
 import * as EmailValidator from 'email-validator';
 
@@ -60,6 +61,10 @@ class Login extends Component {
         return;
     }
 
+    static navigationOptions = {
+        header: null
+    }    
+
     render() {
         return (
             <View style={styles.screenContainer}>
@@ -75,7 +80,7 @@ class Login extends Component {
                     </View>
                     <View style={styles.formExtrasContainer}>
                         <Text style={this.state.error == "Logging you in!" ? styles.noErrorMessage : styles.errorMessage}>{this.state.error}</Text>
-                        <Text style={styles.signUpText}>Don't have an account? Click here!</Text>
+                        <Text style={styles.signUpText}>Don't have an account? <Text style={{color: 'blue'}} onPress={() => this.props.navigation.navigate('SignUp')}>Click here!</Text></Text>
                     </View>
                 </View>
             </View>
@@ -90,6 +95,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#349E39'
     },
     titleTextContainer: {
         backgroundColor: '#149966', 
