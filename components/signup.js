@@ -14,7 +14,7 @@ class SignUp extends Component {
             password: "",
             submitted: false,
             error: ""
-        }
+        };
 
         this._onButtonPress = this._onButtonPress.bind(this);
     }

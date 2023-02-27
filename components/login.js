@@ -13,7 +13,7 @@ class Login extends Component {
             password: "",
             submitted: false,
             error: ""
-        }
+        };
 
         this._onButtonPress = this._onButtonPress.bind(this);
     }
@@ -22,14 +22,14 @@ class Login extends Component {
         // Check if fields are empty
         if(this.state.email === "" || this.state.password === "") {
             this.setState({error:"Either the email or password field is empty!"});
-            this.setState({submitted:false})
+            this.setState({submitted:false});
             return;
         } 
         
         // Validate email
         if(!EmailValidator.validate(this.state.email)) {
             this.setState({error:"Email was incorrect"});
-            this.setState({submitted:false})
+            this.setState({submitted:false});
             return;
         }
 
@@ -37,7 +37,7 @@ class Login extends Component {
         const re = new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");
         if(re.test(this.state.password) === false) {
             this.setState({error:"Password was incorrect"});
-            this.setState({submitted:false})
+            this.setState({submitted:false});
             return;
         }
 
