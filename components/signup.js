@@ -58,12 +58,40 @@ class SignUp extends Component {
 
         // If all validation passes
         if((this.state.first_name != "" && this.state.first_name.length > 2) && (this.state.last_name != "" && this.state.last_name.length > 2) && EmailValidator.validate(this.state.email) && re.test(this.state.password) === true) {
-            this.setState({error:"Logging you in!"});
+            this.setState({error:"Thanks for signing up!"});
             this.setState({submitted:true});
+
+            this._createUser();
+
             return;
         }
 
         return;
+    }
+
+    _createUser() {
+        let toSend = {
+            first_name: this.state.first_name,
+            last_name: this.state.last_name,
+            email: this.state.email,
+            password: this.state.password
+        };
+
+        return fetch("http://localhost:3333/api/1.0.0/user", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(toSend)
+        })
+        .then((response) => {
+            if(response.status === 201) this.setState({error:"Login successful!"});
+            if(response.status === 400) this.setState({error:"Something you entered was wrong. Please try again."});
+            if(response.status === 500) this.setState({error:"Something went wrong on our end. Please try again."});
+        })
+        .catch((error) => {
+            console.log(error)
+        })
     }
 
     _onButtonPress() {
