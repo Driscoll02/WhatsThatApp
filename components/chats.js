@@ -5,7 +5,7 @@ class Chats extends Component {
     render() {
         return (
             <h3>Chats</h3>
-        )
+        );
     }
 }
 

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Text, TextInput, View, Pressable, StyleSheet } from 'react-native';
-import SignUp from './signup';
 
 import * as EmailValidator from 'email-validator';
 
@@ -58,7 +57,7 @@ class Login extends Component {
         // Validate form inputs
         this._validateInputs();
 
-        this.props.navigation.navigate('Chats')
+        this.props.navigation.navigate('Chats');
 
         return;
     }
@@ -66,7 +65,7 @@ class Login extends Component {
     // Reset state when user navigates back to screen
     componentDidMount() {
         const refreshState = this.props.navigation.addListener("focus", () => {
-            this.setState({email:"", password:"", submitted:false, error:""})
+            this.setState({email:"", password:"", submitted:false, error:""});
         })
 
         return refreshState;
