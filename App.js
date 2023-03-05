@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import Login from './components/login';
 import SignUp from './components/signup';
+import Chats from './components/chats';
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -13,6 +14,7 @@ export default function App() {
       <NavStack.Navigator initialRouteName='Login'>
         <NavStack.Screen options={{headerShown: false}} name='Login' component={Login} />
         <NavStack.Screen name='SignUp' component={SignUp} />
+        <NavStack.Screen options={{headerShown: false}} name='Chats' component={Chats} />
       </NavStack.Navigator>
     </NavigationContainer>
   );

@@ -58,6 +58,8 @@ class Login extends Component {
         // Validate form inputs
         this._validateInputs();
 
+        this.props.navigation.navigate('Chats')
+
         return;
     }
 
