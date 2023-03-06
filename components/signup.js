@@ -86,7 +86,7 @@ class SignUp extends Component {
         })
         .then((response) => {
             if(response.status === 201) this.setState({error:"Login successful!"});
-            if(response.status === 400) this.setState({error:"Something you entered was wrong. Please try again."});
+            if(response.status === 400) this.setState({error:"Something you entered was wrong. Please check your info and try again."});
             if(response.status === 500) this.setState({error:"Something went wrong on our end. Please try again."});
         })
         .catch((error) => {
