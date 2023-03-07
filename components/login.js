@@ -42,11 +42,48 @@ class Login extends Component {
 
         // If all validation passes
         if(EmailValidator.validate(this.state.email) && re.test(this.state.password) === true) {
-            this.setState({error:"Logging you in!"});
+            this._loginUser();
+
             return;
         }
 
         return;
+    }
+
+    _loginUser() {
+        let toSend = {
+            email: this.state.email,
+            password: this.state.password
+        };
+
+        return fetch("http://localhost:3333/api/1.0.0/login", {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(toSend)
+        })
+        .then((response) => {
+            if(response.status === 200) {
+                this.setState({error:"Login successful!"});
+                return response.json();
+            }
+            if(response.status === 400) {
+                this.setState({error:"Invalid email or password."});
+                throw "Invalid email or password.";
+            }
+            if(response.status === 500) {
+                this.setState({error:"Something went wrong on our end. Please try again."});
+                throw "Something went wrong on our end. Please try again.";
+            }
+        })
+        .then((resJson) => {
+            console.log(resJson);
+            this.props.navigation.navigate('Chats');
+        })
+        .catch((error) => {
+            console.log(error);
+        })
     }
 
     _onButtonPress() {
@@ -56,8 +93,6 @@ class Login extends Component {
 
         // Validate form inputs
         this._validateInputs();
-
-        this.props.navigation.navigate('Chats');
 
         return;
     }
@@ -85,7 +120,7 @@ class Login extends Component {
                         </Pressable>
                     </View>
                     <View style={styles.formExtrasContainer}>
-                        <Text style={this.state.error == "Logging you in!" ? styles.noErrorMessage : styles.errorMessage}>{this.state.error}</Text>
+                        <Text style={this.state.error == "Login successful!" ? styles.noErrorMessage : styles.errorMessage}>{this.state.error}</Text>
                         <Text style={styles.signUpText}>Don't have an account? <Text style={{color: 'blue'}} onPress={() => this.props.navigation.navigate('SignUp')}>Click here!</Text></Text>
                     </View>
                 </View>
