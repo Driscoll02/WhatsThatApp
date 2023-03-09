@@ -78,13 +78,17 @@ class Login extends Component {
                 throw "Something went wrong on our end. Please try again.";
             };
         })
-        .then((resJson) => {
+        .then(async (resJson) => {
             console.log(resJson);
 
-            AsyncStorage.setItem("id", resJson.id)
-            AsyncStorage.setItem("token", resJson.token)
+            try {
+                await AsyncStorage.setItem("whatsthat_user_id", resJson.id)
+                await AsyncStorage.setItem("whatsthat_session_token", resJson.token)
 
-            this.props.navigation.navigate('Chats');
+                this.props.navigation.navigate('Chats');
+            } catch {
+                throw "Something went wrong."
+            }
         })
         .catch((error) => {
             console.log(error);
@@ -104,12 +108,27 @@ class Login extends Component {
 
     // Reset state when user navigates back to screen
     componentDidMount() {
+        this.unsubscribe = this.props.navigation.addListener("focus", () => {
+            this.checkLoggedIn();
+        })
+
         const refreshState = this.props.navigation.addListener("focus", () => {
             this.setState({email:"", password:"", submitted:false, error:""});
         })
 
         return refreshState;
     } 
+
+    componentWillUnmount() {
+        this.unsubscribe();
+    }
+
+    checkLoggedIn = async () => {
+        const userToken = await AsyncStorage.getItem("whatsthat_session_token");
+        if (userToken != null) {
+            this.props.navigation.navigate('AuthCheck');
+        }
+    }
 
     render() {
         return (
