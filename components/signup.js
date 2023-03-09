@@ -85,12 +85,18 @@ class SignUp extends Component {
             body: JSON.stringify(toSend)
         })
         .then((response) => {
-            if(response.status === 201) this.setState({error:"Login successful!"});
-            if(response.status === 400) this.setState({error:"Something you entered was wrong. Please check your info and try again."});
-            if(response.status === 500) this.setState({error:"Something went wrong on our end. Please try again."});
+            if(response.status === 201) this.setState({error:"Signup successful!"});
+            if(response.status === 400) {
+                this.setState({error:"Something you entered was wrong. Please check your info and try again."});
+                throw "Something you entered was wrong. Please check your info and try again.";
+            }
+            if(response.status === 500) {
+                this.setState({error:"Something went wrong on our end. Please try again."});
+                throw "Something went wrong on our end. Please try again.";
+            }
         })
         .catch((error) => {
-            console.log(error)
+            console.log(error);
         })
     }
 
