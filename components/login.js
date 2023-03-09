@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Text, TextInput, View, Pressable, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import * as EmailValidator from 'email-validator';
 
@@ -67,18 +68,22 @@ class Login extends Component {
             if(response.status === 200) {
                 this.setState({error:"Login successful!"});
                 return response.json();
-            }
+            };
             if(response.status === 400) {
                 this.setState({error:"Invalid email or password."});
                 throw "Invalid email or password.";
-            }
+            };
             if(response.status === 500) {
                 this.setState({error:"Something went wrong on our end. Please try again."});
                 throw "Something went wrong on our end. Please try again.";
-            }
+            };
         })
         .then((resJson) => {
             console.log(resJson);
+
+            AsyncStorage.setItem("id", resJson.id)
+            AsyncStorage.setItem("token", resJson.token)
+
             this.props.navigation.navigate('Chats');
         })
         .catch((error) => {
