@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Text, TextInput, View, Pressable, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import * as EmailValidator from 'email-validator';
 
@@ -67,19 +68,27 @@ class Login extends Component {
             if(response.status === 200) {
                 this.setState({error:"Login successful!"});
                 return response.json();
-            }
+            };
             if(response.status === 400) {
                 this.setState({error:"Invalid email or password."});
                 throw "Invalid email or password.";
-            }
+            };
             if(response.status === 500) {
                 this.setState({error:"Something went wrong on our end. Please try again."});
                 throw "Something went wrong on our end. Please try again.";
-            }
+            };
         })
-        .then((resJson) => {
+        .then(async (resJson) => {
             console.log(resJson);
-            this.props.navigation.navigate('Chats');
+
+            try {
+                await AsyncStorage.setItem("whatsthat_user_id", resJson.id)
+                await AsyncStorage.setItem("whatsthat_session_token", resJson.token)
+
+                this.props.navigation.navigate('Chats');
+            } catch {
+                throw "Something went wrong."
+            }
         })
         .catch((error) => {
             console.log(error);
@@ -99,12 +108,27 @@ class Login extends Component {
 
     // Reset state when user navigates back to screen
     componentDidMount() {
+        this.unsubscribe = this.props.navigation.addListener("focus", () => {
+            this.checkLoggedIn();
+        })
+
         const refreshState = this.props.navigation.addListener("focus", () => {
             this.setState({email:"", password:"", submitted:false, error:""});
         })
 
         return refreshState;
     } 
+
+    componentWillUnmount() {
+        this.unsubscribe();
+    }
+
+    checkLoggedIn = async () => {
+        const userToken = await AsyncStorage.getItem("whatsthat_session_token");
+        if (userToken != null) {
+            this.props.navigation.navigate('AuthCheck');
+        }
+    }
 
     render() {
         return (
