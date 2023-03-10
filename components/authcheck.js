@@ -1,4 +1,5 @@
-import React, { Component, View, Text, StyleSheet } from 'react';
+import React, { Component} from 'react';
+import { View, Text, StyleSheet  } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class AuthCheck extends Component {
@@ -8,16 +9,19 @@ class AuthCheck extends Component {
         this.checkLoggedIn = this.checkLoggedIn.bind(this);
     }
 
+    // Check if user is logged in on load
     componentDidMount(){
         this.unsubscribe = this.props.navigation.addListener("focus", () => {
             this.checkLoggedIn();
         })
     }
 
+    // Unsubscribe to prevent memory leak
     componentWillUnmount() {
         this.unsubscribe();
     }
 
+    // Check if the user token exists
     checkLoggedIn = async () => {
         const userToken = await AsyncStorage.getItem("whatsthat_session_token");
         if (userToken == null) {
@@ -27,9 +31,9 @@ class AuthCheck extends Component {
     
     render() {
         return (
-            <div>
-                <h1>Text</h1>
-            </div>
+            <View>
+                <Text>Text</Text>
+            </View>
         )
     }
 }

@@ -111,14 +111,28 @@ class SignUp extends Component {
         return;
     }
 
-    // Reset state when user navigates back to screen
+    
     componentDidMount() {
+        this.checkLoggedIn();
+
+        // Reset state when user navigates back to screen
         const refreshState = this.props.navigation.addListener("focus", () => {
             this.setState({first_name:"", last_name:"", email:"", password:"", submitted:false, error:""})
         })
 
         return refreshState;
     } 
+
+    componentWillUnmount() {
+        this.unsubscribe();
+    }
+
+    checkLoggedIn = async () => {
+        const userToken = await AsyncStorage.getItem("whatsthat_session_token");
+        if (userToken != null) {
+            this.props.navigation.navigate('AuthCheck');
+        }
+    }
 
     render() {
         return (

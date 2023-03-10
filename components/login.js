@@ -106,12 +106,12 @@ class Login extends Component {
         return;
     }
 
-    // Reset state when user navigates back to screen
     componentDidMount() {
         this.unsubscribe = this.props.navigation.addListener("focus", () => {
             this.checkLoggedIn();
         })
 
+        // Reset state when user navigates back to screen
         const refreshState = this.props.navigation.addListener("focus", () => {
             this.setState({email:"", password:"", submitted:false, error:""});
         })
