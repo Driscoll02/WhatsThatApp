@@ -1,64 +1,80 @@
 import React, { Component } from 'react';
-import { Text, TextInput, View, Pressable, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import {
+  Text,
+  View,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class Chats extends Component {
-    constructor(props) {
-        super(props)
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            chatList: [],
-            isLoading: true
-        }
+    this.state = {
+      chatList: [],
+      isLoading: true,
+      error: '',
+    };
 
-        this._getChats = this._getChats.bind(this);
+    this.getChats = this.getChats.bind(this);
+  }
+
+  async componentDidMount() {
+    const token = await AsyncStorage.getItem('whatsthat_session_token');
+
+    this.getChats(token);
+  }
+
+  getChats(authToken) {
+    return fetch('http://localhost:3333/api/1.0.0/chat', {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Authorization': authToken,
+      },
+    })
+      .then((response) => response.json())
+      .then((resJson) => {
+        this.setState({ chatList: resJson });
+        this.setState({ isLoading: false });
+      })
+      .catch((err) => {
+        this.setState({ error: err });
+      });
+  }
+
+  render() {
+    const { chatList, isLoading, error } = this.state;
+
+    if (isLoading) {
+      return (
+        <View>
+          <ActivityIndicator />
+        </View>
+      );
     }
 
-    _getChats(authToken) {
-        return fetch("http://localhost:3333/api/1.0.0/chat", {
-            headers: {
-                "Content-Type": "application/json",
-                "X-Authorization": authToken
-            }
-        })
-        .then(response => {
-            return response.json();
-        })
-        .then(resJson => {
-            this.setState({chatList: resJson});
-            this.setState({isLoading: false});
-        })
-        .catch(error => {
-            console.log(error);
-        })
+    if (error !== '') {
+      return (
+        <View>
+          <Text>
+            Something went wrong:
+            {error}
+          </Text>
+        </View>
+      );
     }
 
-    async componentDidMount() {
-        const token = await AsyncStorage.getItem("whatsthat_session_token");
-
-        this._getChats(token);
-    }
-
-    render() {
-        if(this.state.isLoading) {
-            return (
-                <View>
-                   <ActivityIndicator />
-                </View>
-            )
-        }
-
-        return (
-            <View>
-                {console.log(this.state.chatList)}
-                <FlatList
-                data={this.state.chatList}
-                renderItem={({item}) => <Text>{item.name}</Text>}
-                keyExtractor={item => item.chat_id}
-                />
-            </View>
-        );
-    }
+    return (
+      <View>
+        <FlatList
+          data={chatList}
+          renderItem={({ item }) => <Text>{item.name}</Text>}
+          keyExtractor={(item) => item.chat_id}
+        />
+      </View>
+    );
+  }
 }
 
-export default Chats
+export default Chats;
