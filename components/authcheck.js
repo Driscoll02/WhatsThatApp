@@ -25,7 +25,9 @@ class AuthCheck extends Component {
     checkLoggedIn = async () => {
         const userToken = await AsyncStorage.getItem("whatsthat_session_token");
         if (userToken == null) {
-            this.props.navigate('Login');
+            this.props.navigation.navigate('Login');
+        } else {
+            this.props.navigation.navigate('Chats');
         }
     }
     
