@@ -116,11 +116,13 @@ class SignUp extends Component {
     } = this.state;
 
     const toSend = {
-      firstName,
-      lastName,
+      first_name: firstName,
+      last_name: lastName,
       email,
       password,
     };
+
+    console.log(toSend);
 
     return fetch('http://localhost:3333/api/1.0.0/user', {
       method: 'POST',
@@ -130,20 +132,24 @@ class SignUp extends Component {
       body: JSON.stringify(toSend),
     })
       .then((response) => {
-        if (response.status === 201) this.setState({ error: 'Signup successful!' });
+        if (response.status === 201) {
+          this.setState({ submitted: false });
+          this.setState({ error: 'Signup successful!' });
+        }
+
         if (response.status === 400) {
-          this.setState({ error: 'Something you entered was wrong. Please check your info and try again.' });
-          return 'Something you entered was wrong. Please check your info and try again.';
+          this.setState({ submitted: false });
+          throw new Error('Something you entered was wrong. Please check your info and try again.');
         }
         if (response.status === 500) {
-          this.setState({ error: 'Something went wrong on our end. Please try again.' });
-          return 'Something went wrong on our end. Please try again.';
+          this.setState({ submitted: false });
+          throw new Error('Something went wrong on our end. Please try again.');
         }
 
         return 'Something went wrong. Please contact us.';
       })
       .catch((error) => {
-        throw error;
+        this.setState({ error: error.message });
       });
   }
 
