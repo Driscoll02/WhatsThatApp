@@ -122,8 +122,6 @@ class SignUp extends Component {
       password,
     };
 
-    console.log(toSend);
-
     return fetch('http://localhost:3333/api/1.0.0/user', {
       method: 'POST',
       headers: {
@@ -132,21 +130,21 @@ class SignUp extends Component {
       body: JSON.stringify(toSend),
     })
       .then((response) => {
+        this.setState({ submitted: false });
+
         if (response.status === 201) {
-          this.setState({ submitted: false });
           this.setState({ error: 'Signup successful!' });
+          const { navigation } = this.props;
+          navigation.navigate('Login');
         }
 
         if (response.status === 400) {
-          this.setState({ submitted: false });
           throw new Error('Something you entered was wrong. Please check your info and try again.');
-        }
-        if (response.status === 500) {
-          this.setState({ submitted: false });
+        } else if (response.status === 500) {
           throw new Error('Something went wrong on our end. Please try again.');
+        } else {
+          throw new Error('Something went wrong. Please contact us.');
         }
-
-        return 'Something went wrong. Please contact us.';
       })
       .catch((error) => {
         this.setState({ error: error.message });
