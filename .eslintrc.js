@@ -24,7 +24,7 @@ module.exports = {
   ],
   rules: {
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
-    'eslint-disable no-dupe-keys': '0',
-    'eslint-disable react/prop-types': '0',
+    'linebreak-style': ['error', 'windows'],
+    'no-use-before-define': 0,
   },
 };

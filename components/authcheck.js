@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import PropTypes from 'prop-types';
 
 class AuthCheck extends Component {
   constructor(props) {
@@ -11,7 +12,8 @@ class AuthCheck extends Component {
 
   // Check if user is logged in on load
   componentDidMount() {
-    this.unsubscribe = this.props.navigation.addListener('focus', () => {
+    const { navigation } = this.props;
+    this.unsubscribe = navigation.addListener('focus', () => {
       this.checkLoggedIn();
     });
   }
@@ -23,11 +25,13 @@ class AuthCheck extends Component {
 
   // Check if the user token exists
   checkLoggedIn = async () => {
+    const { navigation } = this.props;
+
     const userToken = await AsyncStorage.getItem('whatsthat_session_token');
-    if (userToken == null) {
-      this.props.navigation.navigate('Login');
+    if (userToken == null || undefined) {
+      navigation.navigate('Login');
     } else {
-      this.props.navigation.navigate('Chats');
+      navigation.navigate('Chats');
     }
   };
 
@@ -39,5 +43,12 @@ class AuthCheck extends Component {
     );
   }
 }
+
+AuthCheck.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+    addListener: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 export default AuthCheck;

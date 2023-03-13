@@ -7,8 +7,167 @@ import {
   StyleSheet,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import PropTypes from 'prop-types';
 
 import * as EmailValidator from 'email-validator';
+
+class Login extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      email: '',
+      password: '',
+      error: '',
+    };
+
+    this.onButtonPress = this.onButtonPress.bind(this);
+  }
+
+  componentDidMount() {
+    const { navigation } = this.props;
+
+    this.unsubscribe = navigation.addListener('focus', () => {
+      this.checkLoggedIn();
+    });
+
+    // Reset state when user navigates back to screen
+    const refreshState = navigation.addListener('focus', () => {
+      this.setState({
+        email: '',
+        password: '',
+        error: '',
+      });
+    });
+
+    return refreshState;
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  onButtonPress() {
+    // reset submitted and error state
+    this.setState({ error: '' });
+
+    // Validate form inputs
+    this.validateInputs();
+  }
+
+  checkLoggedIn = async () => {
+    const { navigation } = this.props;
+
+    const userToken = await AsyncStorage.getItem('whatsthat_session_token');
+    if (userToken != null) {
+      navigation.navigate('AuthCheck');
+    }
+  };
+
+  loginUser() {
+    const { email, password } = this.state;
+
+    const toSend = {
+      email,
+      password,
+    };
+
+    return fetch('http://localhost:3333/api/1.0.0/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(toSend),
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          this.setState({ error: 'Login successful!' });
+          return response.json();
+        }
+
+        if (response.status === 400) {
+          throw new Error('Invalid email or password.');
+        } else if (response.status === 500) {
+          throw new Error('Something went wrong on our end. Please try again.');
+        } else {
+          throw new Error('Something went wrong. Please contact us.');
+        }
+      })
+      .then(async (resJson) => {
+        await AsyncStorage.setItem('whatsthat_user_id', resJson.id);
+        await AsyncStorage.setItem('whatsthat_session_token', resJson.token);
+
+        const { navigation } = this.props;
+        navigation.navigate('AuthCheck');
+      })
+      .catch((error) => {
+        this.setState({ error: error.message });
+      });
+  }
+
+  validateInputs() {
+    const { email, password } = this.state;
+
+    // Check if fields are empty
+    if (email === '' || password === '') {
+      this.setState({ error: 'Either the email or password field is empty!' });
+      return;
+    }
+
+    // Validate email
+    if (!EmailValidator.validate(email)) {
+      this.setState({ error: 'Email was incorrect' });
+      return;
+    }
+
+    // Validate password
+    const re = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+    if (re.test(password) === false) {
+      this.setState({ error: 'Password was incorrect' });
+      return;
+    }
+
+    // If all validation passes
+    if (EmailValidator.validate(email) && re.test(password) === true) {
+      this.loginUser();
+    }
+  }
+
+  render() {
+    const { email, password, error } = this.state;
+    const { navigation } = this.props;
+
+    return (
+      <View style={styles.screenContainer}>
+        <Text style={styles.titleTextContainer}>WhatsThat?</Text>
+        <View style={styles.formContainer}>
+          <View style={styles.formFieldsContainer}>
+            <Text style={{ marginBottom: 20, color: 'black', fontSize: '1.8em' }}>Enter your login:</Text>
+            <TextInput style={styles.fieldContainer} placeholder="Email" value={email} onChangeText={(value) => this.setState({ email: value })} />
+            <TextInput style={styles.fieldContainer} secureTextEntry placeholder="Password" value={password} onChangeText={(value) => this.setState({ password: value })} />
+            <Pressable style={styles.loginButton} onPress={this.onButtonPress}>
+              <Text>Login</Text>
+            </Pressable>
+          </View>
+          <View style={styles.formExtrasContainer}>
+            <Text style={error === 'Login successful!' ? styles.noErrorMessage : styles.errorMessage}>{error}</Text>
+            <Text style={styles.signUpText}>
+              Not have an account?
+              <Text style={{ color: 'blue' }} onPress={() => navigation.navigate('SignUp')}>Click here!</Text>
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  }
+}
+
+Login.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+    addListener: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 const styles = StyleSheet.create({
   screenContainer: {
@@ -83,162 +242,5 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
 });
-
-class Login extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      email: '',
-      password: '',
-      submitted: false,
-      error: '',
-    };
-
-    this.onButtonPress = this.onButtonPress.bind(this);
-  }
-
-  componentDidMount() {
-    this.unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.checkLoggedIn();
-    });
-
-    // Reset state when user navigates back to screen
-    const refreshState = this.props.navigation.addListener('focus', () => {
-      this.setState({
-        email: '',
-        password: '',
-        submitted: false,
-        error: '',
-      });
-    });
-
-    return refreshState;
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
-
-  onButtonPress() {
-    // reset submitted and error state
-    this.setState({ submitted: true });
-    this.setState({ error: '' });
-
-    // Validate form inputs
-    this.validateInputs();
-  }
-
-  checkLoggedIn = async () => {
-    const { navigation } = this.props;
-
-    const userToken = await AsyncStorage.getItem('whatsthat_session_token');
-    if (userToken != null) {
-      navigation.navigate('AuthCheck');
-    }
-  };
-
-  loginUser() {
-    const { email, password } = this.state;
-
-    const toSend = {
-      email,
-      password,
-    };
-
-    return fetch('http://localhost:3333/api/1.0.0/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(toSend),
-    })
-      .then((response) => {
-        if (response.status === 200) {
-          this.setState({ error: 'Login successful!' });
-          return response.json();
-        }
-
-        if (response.status === 400) {
-          this.setState({ error: 'Invalid email or password.' });
-          return 'Invalid email or password.';
-        }
-
-        if (response.status === 500) {
-          this.setState({ error: 'Something went wrong on our end. Please try again.' });
-          return 'Something went wrong on our end. Please try again.';
-        }
-
-        return 'Something went wrong. Please contact us.';
-      })
-      .then(async (resJson) => {
-        await AsyncStorage.setItem('whatsthat_user_id', resJson.id);
-        await AsyncStorage.setItem('whatsthat_session_token', resJson.token);
-
-        this.props.navigation.navigate('Chats');
-      })
-      .catch((error) => {
-        throw error;
-      });
-  }
-
-  validateInputs() {
-    const { email, password, submitted } = this.state;
-
-    // Check if fields are empty
-    if (email === '' || password === '') {
-      this.setState({ error: 'Either the email or password field is empty!' });
-      this.setState({ submitted: false });
-      return;
-    }
-
-    // Validate email
-    if (!EmailValidator.validate(email)) {
-      this.setState({ error: 'Email was incorrect' });
-      this.setState({ submitted: false });
-      return;
-    }
-
-    // Validate password
-    const re = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
-    if (re.test(password) === false) {
-      this.setState({ error: 'Password was incorrect' });
-      this.setState({ submitted: false });
-      return;
-    }
-
-    // If all validation passes
-    if (EmailValidator.validate(email) && re.test(password) === true) {
-      this.loginUser();
-    }
-  }
-
-  render() {
-    const { email, password, error } = this.state;
-
-    return (
-      <View style={styles.screenContainer}>
-        <Text style={styles.titleTextContainer}>WhatsThat?</Text>
-        <View style={styles.formContainer}>
-          <View style={styles.formFieldsContainer}>
-            <Text style={{ marginBottom: 20, color: 'black', fontSize: '1.8em' }}>Enter your login:</Text>
-            <TextInput style={styles.fieldContainer} placeholder="Email" value={email} onChangeText={(value) => this.setState({ email: value })} />
-            <TextInput style={styles.fieldContainer} secureTextEntry placeholder="Password" value={password} onChangeText={(value) => this.setState({ password: value })} />
-            <Pressable style={styles.loginButton} onPress={this.onButtonPress}>
-              <Text>Login</Text>
-            </Pressable>
-          </View>
-          <View style={styles.formExtrasContainer}>
-            <Text style={error === 'Login successful!' ? styles.noErrorMessage : styles.errorMessage}>{error}</Text>
-            <Text style={styles.signUpText}>
-              Not have an account?
-              <Text style={{ color: 'blue' }} onPress={() => this.props.navigation.navigate('SignUp')}>Click here!</Text>
-            </Text>
-          </View>
-        </View>
-      </View>
-    );
-  }
-}
 
 export default Login;
